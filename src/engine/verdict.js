@@ -21,6 +21,10 @@ export const THRESHOLDS = {
   goodOosSharpe: 0.5, // out-of-sample Sharpe we'd want to see
   deadOosSharpe: 0.0, // at/below this OOS, the edge is gone
   bigDegradation: 0.6, // fraction of IS Sharpe lost OOS that screams overfit
+  // ── Buy-and-hold benchmark (the one comparison that decides survival) ──
+  // Compared over the SAME out-of-sample window, not the full history.
+  benchMaterialGap: 0.1, // trail B&H by ≥10 OOS points → material, cannot SURVIVE
+  benchDeadCapture: 0.25, // keep <25% of B&H's OOS return (or lose while it gained) → DEAD
 };
 
 /**
@@ -154,12 +158,28 @@ export function computeVerdict(result, opts = {}) {
     });
   }
 
-  // ── Did it even beat buy-and-hold out-of-sample? ──────────────────────────
-  const benchReturn = m.benchmark.totalReturn;
-  if (oosReturn < benchReturn && exposure < THRESHOLDS.alwaysInExposure) {
+  // ── The benchmark that decides survival: buy-and-hold, SAME OOS window. ────
+  // A strategy that trails buy-and-hold of its own instrument, over the very
+  // window it's judged on, has failed the one comparison that matters — getting
+  // lapped by doing nothing is not a surviving edge. We compare like-for-like
+  // (OOS strategy vs OOS buy-and-hold), using the engine's own self-proven
+  // benchmark return — never a fresh price calculation here. This is a downgrade
+  // with a stated reason, not a suggestion to change the strategy.
+  const sym = result.instrument.symbol;
+  const benchOosReturn = (m.benchmarkOut ?? m.benchmark).totalReturn;
+  const benchGap = benchOosReturn - oosReturn; // >0 ⇒ buy-and-hold won
+  if (
+    exposure < THRESHOLDS.alwaysInExposure &&
+    Number.isFinite(benchOosReturn) &&
+    benchOosReturn > 0 &&
+    benchGap >= THRESHOLDS.benchMaterialGap
+  ) {
+    const capture = oosReturn / benchOosReturn; // share of B&H's return kept
+    const severe = oosReturn <= 0 || capture < THRESHOLDS.benchDeadCapture;
+    flags.underperformsBench = severe ? "fatal" : "warn";
     reasons.push({
-      level: "info",
-      text: `Out-of-sample the strategy returned ${pct(oosReturn)} while simply holding ${result.instrument.symbol} returned ${pct(benchReturn)} over the full window. The active strategy did not beat doing nothing.`,
+      level: severe ? "fatal" : "warn",
+      text: `Out-of-sample the strategy returned ${pct(oosReturn)} while simply holding ${sym} over the same window returned ${pct(benchOosReturn)} — you underperformed buy-and-hold by ${pct(benchGap)}. Getting lapped by doing nothing is not a surviving edge; the active trading destroyed value versus holding ${sym}.`,
     });
   }
 
@@ -168,7 +188,8 @@ export function computeVerdict(result, opts = {}) {
     reasons.some((r) => r.level === "fatal") ||
     flags.curveFit ||
     flags.diesOnCosts ||
-    flags.buyAndHold;
+    flags.buyAndHold ||
+    flags.underperformsBench === "fatal";
   let bucket, headline;
 
   if (hasFatal) {
@@ -179,11 +200,14 @@ export function computeVerdict(result, opts = {}) {
         ? "The edge dies after trading costs"
         : flags.buyAndHold
           ? "This is buy-and-hold in disguise"
-          : "Rejected on the evidence";
+          : flags.underperformsBench === "fatal"
+            ? `You underperformed simply holding ${sym}`
+            : "Rejected on the evidence";
   } else if (
     oosSharpe >= THRESHOLDS.goodOosSharpe &&
     fullSharpe > 0 &&
-    !flags.weakOos
+    !flags.weakOos &&
+    !flags.underperformsBench
   ) {
     bucket = "PLAUSIBLE";
     headline = "Plausible edge — survives out-of-sample and costs";
@@ -260,7 +284,8 @@ export function computeVerdict(result, opts = {}) {
       fullSharpe,
       noCostSharpe,
       oosReturn,
-      benchReturn,
+      benchReturn: m.benchmark.totalReturn,
+      benchOosReturn,
       nTrades,
       exposure,
     },

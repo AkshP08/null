@@ -18,6 +18,7 @@ export const CAUSE = {
   COST_DRAG: "cost_drag",
   OVERFIT: "overfit",
   OOS_LOSS: "oos_loss",
+  UNDERPERFORMS_BENCH: "underperforms_bench",
   INSTRUMENT_DEPENDENCE: "instrument_dependence",
   FRAGILITY: "fragility",
 };
@@ -97,13 +98,16 @@ export function diagnose(result, crossRuns = [], opts = {}) {
   const noCostS = m.fullNoCost.sharpe;
   const oosRet = m.outSample.totalReturn;
   const benchRet = m.benchmark.totalReturn;
+  // Buy-and-hold over the SAME out-of-sample window (engine self-proof value) —
+  // the apples-to-apples yardstick for the OOS strategy return.
+  const benchOosRet = (m.benchmarkOut ?? m.benchmark).totalReturn;
   const trades = c.trades;
   const exposure = c.exposure;
   const turnover = m.full.turnover;
   const expectancy = m.full.expectancy;
   const sym = result.instrument?.symbol || "this instrument";
 
-  const stats = { isS, oosS, fullS, noCostS, oosRet, benchRet, trades, exposure, turnover, expectancy, sym };
+  const stats = { isS, oosS, fullS, noCostS, oosRet, benchRet, benchOosRet, trades, exposure, turnover, expectancy, sym };
   const anchors = chartAnchors(result);
   const oosRange = anchors?.splitDate && anchors?.endDate
     ? { type: "range", from: anchors.splitDate, to: anchors.endDate, label: "the out-of-sample stretch" }
@@ -181,14 +185,37 @@ export function diagnose(result, crossRuns = [], opts = {}) {
     });
   }
 
-  // ── Lost money out-of-sample (only note it if not already the overfit story). ─
+  // ── Beaten by buy-and-hold over the SAME out-of-sample window. ────────────
+  // The one benchmark that matters: if simply holding the instrument beat the
+  // active strategy over the window it's judged on, the trading destroyed value
+  // — a cause of death in its own right, no matter how positive the raw return
+  // looks. Compared like-for-like (OOS vs OOS) on the engine's self-proven B&H.
+  const benchGap = benchOosRet - oosRet; // >0 ⇒ buy-and-hold won
+  const beatenByHold =
+    exposure < THRESHOLDS.alwaysInExposure &&
+    Number.isFinite(benchOosRet) && benchOosRet > 0 &&
+    benchGap >= THRESHOLDS.benchMaterialGap;
+  if (beatenByHold) {
+    const capture = oosRet / benchOosRet;
+    const severe = oosRet <= 0 || capture < THRESHOLDS.benchDeadCapture;
+    causes.push({
+      mode: CAUSE.UNDERPERFORMS_BENCH, severity: severe ? "fatal" : "warn",
+      title: `Beaten by simply holding ${sym}`,
+      text: `Out-of-sample the strategy returned ${spf(oosRet)} while holding ${sym} over the same window returned ${spf(benchOosRet)} — it underperformed buy-and-hold by ${pf(benchGap)}. The active trading destroyed value versus doing nothing. That is the cause of death, not a dial to tune.`,
+      evidence: [["OOS strategy", spf(oosRet)], [`Buy-and-hold ${sym}`, spf(benchOosRet)], ["Shortfall vs hold", pf(benchGap)]],
+      focus: oosRange,
+    });
+  }
+
+  // ── Lost money out-of-sample (only note it if not already the overfit or
+  //    beaten-by-hold story). ─────────────────────────────────────────────────
   const hasOverfitFatal = causes.some((x) => x.mode === CAUSE.OVERFIT && x.severity === "fatal");
-  if (oosRet < 0 && trades >= THRESHOLDS.minTrades && !hasOverfitFatal) {
+  if (oosRet < 0 && trades >= THRESHOLDS.minTrades && !hasOverfitFatal && !beatenByHold) {
     causes.push({
       mode: CAUSE.OOS_LOSS, severity: "warn",
       title: "Lost money on unseen data",
-      text: `Out-of-sample the strategy returned ${spf(oosRet)} while simply holding ${sym} returned ${spf(benchRet)} over the window. Whatever worked in-sample did not pay on data it hadn't seen.`,
-      evidence: [["Out-of-sample return", spf(oosRet)], ["Buy-and-hold", spf(benchRet)]],
+      text: `Out-of-sample the strategy returned ${spf(oosRet)} while simply holding ${sym} returned ${spf(benchOosRet)} over the same window. Whatever worked in-sample did not pay on data it hadn't seen.`,
+      evidence: [["Out-of-sample return", spf(oosRet)], ["Buy-and-hold", spf(benchOosRet)]],
       focus: worstTradeFocus || oosRange,
     });
   }
@@ -216,6 +243,7 @@ export function diagnose(result, crossRuns = [], opts = {}) {
   const alive =
     !causes.some((x) => x.severity === "fatal") &&
     !causes.some((x) => x.mode === CAUSE.FRAGILITY) &&
+    !causes.some((x) => x.mode === CAUSE.UNDERPERFORMS_BENCH) &&
     oosS >= THRESHOLDS.goodOosSharpe && fullS > 0;
   return { alive, causes, primary, stats, anchors };
 }
@@ -316,7 +344,7 @@ export function answerLocal(question, diagnosis, result) {
   if (/buy.?and.?hold|just the market|passive|hold(ing)?|beat the market/.test(q)) {
     const c = has(CAUSE.BUY_AND_HOLD);
     if (c) return c.text;
-    return `Exposure is ${pf(s.exposure)} of the time, so it isn't simply buy-and-hold. For reference, holding ${s.sym} over the window returned ${spf(s.benchRet)} versus the strategy's out-of-sample ${spf(s.oosRet)}.`;
+    return `Exposure is ${pf(s.exposure)} of the time, so it isn't simply buy-and-hold. For reference, holding ${s.sym} over the same out-of-sample window returned ${spf(s.benchOosRet)} versus the strategy's ${spf(s.oosRet)}.`;
   }
   // instrument dependence
   if (/instrument|ticker|other markets?|cross|another (stock|asset)|robust/.test(q)) {
@@ -366,6 +394,7 @@ export function buildAutopsyPayload(diagnosis) {
     sharpeBeforeCosts: f2(s.noCostS),
     outSampleReturn: spf(s.oosRet),
     buyAndHoldReturn: spf(s.benchRet),
+    buyAndHoldReturnOOS: spf(s.benchOosRet),
     timeInMarket: pf(s.exposure),
     turnoverFillsPerBar: f2(s.turnover),
     perTradeExpectancy: spf(s.expectancy, 2),

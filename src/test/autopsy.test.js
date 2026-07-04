@@ -78,12 +78,15 @@ describe("diagnose — each failure mode fires on a constructed example", () => 
   });
 
   it("OOS_LOSS (warn) when it loses money OOS without being a clean overfit story", () => {
+    // Buy-and-hold of the same window ALSO fell (-18%), so the -15% OOS loss is
+    // not underperformance vs holding — it isolates the plain OOS_LOSS finding.
     const dx = diagnose(makeResult({
       counts: { trades: 30, exposure: 0.5 },
-      metrics: { inSample: { sharpe: -0.1 }, outSample: { sharpe: -0.2, totalReturn: -0.15 }, full: { sharpe: -0.12, turnover: 0.05 }, fullNoCost: { sharpe: -0.1 }, benchmark: { totalReturn: 0.3 } },
+      metrics: { inSample: { sharpe: -0.1 }, outSample: { sharpe: -0.2, totalReturn: -0.15 }, full: { sharpe: -0.12, turnover: 0.05 }, fullNoCost: { sharpe: -0.1 }, benchmark: { totalReturn: -0.18 }, benchmarkOut: { totalReturn: -0.18 } },
     }));
     expect(modes(dx)).toContain(CAUSE.OOS_LOSS);
     expect(modes(dx)).not.toContain(CAUSE.OVERFIT);
+    expect(modes(dx)).not.toContain(CAUSE.UNDERPERFORMS_BENCH);
   });
 
   it("INSTRUMENT_DEPENDENCE when the edge holds on one instrument of several", () => {

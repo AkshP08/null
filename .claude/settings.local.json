@@ -48,7 +48,9 @@
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:5173/)",
       "Bash(curl -s --max-time 15 -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 Chrome/124.0 Safari/537.36' 'https://stooq.com/q/d/l/?s=spy.us&i=d')",
       "Bash(curl -s --max-time 15 \"https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=2000\" -o /tmp/cg.json -w \"HTTP %{http_code}\\\\n\")",
-      "Bash(node --input-type=module -e ' *)"
+      "Bash(node --input-type=module -e ' *)",
+      "Bash(npm test *)",
+      "Bash(grep -n \"answerLocal\\\\|REFUSAL\\\\|OUT_OF_SCOPE\\\\|^export const\\\\|return \\\\`\\\\|return \\\\\"\" src/engine/autopsy.js)"
     ],
     "additionalDirectories": [
       "/Users/akshpatel/Downloads/Null/src/data"

@@ -426,6 +426,15 @@ export function backtest(spec, data, cfg = {}) {
     totalBars: benchReturns.length,
     rfPerPeriod,
   });
+  // Buy-and-hold over the OUT-OF-SAMPLE window only, on the exact same aligned
+  // adjusted-close ratios. benchReturns[j] and withCosts.returns[j] are the same
+  // time step, so slicing at splitAt gives the apples-to-apples benchmark the
+  // verdict compares the OOS strategy return against. Self-proof: its total
+  // return equals adjClose[end]/adjClose[splitStart]-1 over the OOS window.
+  const benchOut = computeMetrics(benchReturns.slice(splitAt, m), [], {
+    totalBars: m - splitAt,
+    rfPerPeriod,
+  });
 
   return {
     ok: true,
@@ -460,7 +469,7 @@ export function backtest(spec, data, cfg = {}) {
     },
     returns: { strategy: withCosts.returns, benchmark: benchReturns },
     trades: withCosts.trades,
-    metrics: { full, fullNoCost, inSample, outSample, benchmark: benchFull },
+    metrics: { full, fullNoCost, inSample, outSample, benchmark: benchFull, benchmarkOut: benchOut },
     counts: {
       trades: withCosts.trades.length,
       bars: m,

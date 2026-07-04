@@ -67,6 +67,32 @@ describe("engine self-proof: buy-and-hold === instrument adjusted return", () =>
     const b = backtest(SMA_CROSS, makeData(closes), { commissionBps: 50, slippageBps: 50 });
     close(a.metrics.benchmark.totalReturn, b.metrics.benchmark.totalReturn, 1e-12);
   });
+
+  it("OOS benchmark (benchmarkOut) === adjClose[end]/adjClose[splitStart]-1 over the OOS window", () => {
+    // A non-monotonic series so in-sample and out-of-sample windows differ.
+    const closes = [10, 11, 12, 11, 13, 14, 13, 15, 16, 14, 17, 18, 20, 19, 21, 24, 22, 26, 25, 30];
+    const res = backtest(SMA_CROSS, makeData(closes), { commissionBps: 5, slippageBps: 5 });
+    expect(res.ok).toBe(true);
+    expect(res.metrics.benchmarkOut).toBeTruthy();
+
+    // (a) Self-proof against the engine's own (already-proven) benchmark equity
+    //     curve: OOS B&H = benchEquity[end] / benchEquity[split] - 1.
+    const be = res.equity.benchmark;
+    const split = res.split.splitIndex;
+    close(res.metrics.benchmarkOut.totalReturn, be[be.length - 1] / be[split] - 1, 1e-9);
+
+    // (b) Self-proof straight from the split-adjusted prices the engine traded.
+    const closeS = res.series.close;
+    const N = closeS.length;
+    const startIdx = N - 1 - res.window.bars; // dateOut[0]=date[startIdx], dateOut[last]=date[N-1]
+    const startP = closeS[startIdx + split];
+    const endP = closeS[N - 1];
+    close(res.metrics.benchmarkOut.totalReturn, endP / startP - 1, 1e-9);
+
+    // (c) It is a DIFFERENT number than the full-window benchmark — the whole
+    //     point of the fix (the old code compared OOS return to the full B&H).
+    expect(res.metrics.benchmarkOut.totalReturn).not.toBeCloseTo(res.metrics.benchmark.totalReturn, 6);
+  });
 });
 
 describe("no look-ahead", () => {

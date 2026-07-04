@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Skull, Heart, Send, ShieldAlert } from "lucide-react";
 import { C, SERIF, MONO, SANS } from "../ui/tokens.js";
 import { Eyebrow } from "./Bits.jsx";
+import Markdown from "./Markdown.jsx";
 import { diagnose, summarize } from "../engine/autopsy.js";
 import { askAutopsy } from "../ai/autopsyChat.js";
 
@@ -90,7 +91,7 @@ export default function Autopsy({ result, crossRuns, fragility }) {
                   border: msg.role === "you" ? "none" : `1px solid ${C.border}`,
                   borderRadius: 8, padding: msg.role === "you" ? "2px 4px" : "10px 12px", lineHeight: 1.55,
                 }}>
-                  {msg.role === "you" ? `› ${msg.text}` : msg.text}
+                  {msg.role === "you" ? `› ${msg.text}` : <Markdown text={msg.text} />}
                 </div>
               </div>
             ))}

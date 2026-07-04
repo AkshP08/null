@@ -123,3 +123,65 @@ describe("verdict determinism", () => {
     expect(v.reasons.some((x) => x.level === "warn")).toBe(true);
   });
 });
+
+describe("verdict vs buy-and-hold (same out-of-sample window)", () => {
+  // A textbook-passing run (strong OOS Sharpe, survives costs), varied ONLY by
+  // how its OOS return stacks up against buy-and-hold of the SAME OOS window.
+  const passing = (oosReturn, benchOut) => ({
+    ok: true,
+    instrument: { symbol: "AAPL" },
+    counts: { trades: 50, bars: 1000, exposure: 0.5 },
+    metrics: {
+      full: { sharpe: 1.0 },
+      fullNoCost: { sharpe: 1.2 },
+      inSample: { sharpe: 1.8 },
+      outSample: { sharpe: 1.4, totalReturn: oosReturn },
+      benchmark: { totalReturn: 999 },        // full-history B&H — must NOT be used
+      benchmarkOut: { totalReturn: benchOut }, // same-window B&H — the real yardstick
+    },
+  });
+
+  it("a strategy that BEATS buy-and-hold OOS can still be SURVIVED", () => {
+    const v = computeVerdict(passing(0.30, 0.20)); // +30% vs +20% hold
+    expect(v.bucket).toBe("PLAUSIBLE");
+    expect(v.flags.underperformsBench).toBeUndefined();
+  });
+
+  it("ignores the full-history benchmark — beating the OOS window is what counts", () => {
+    // Full-window B&H is 999 (99,900%); only benchmarkOut (+20%) decides survival.
+    const v = computeVerdict(passing(0.30, 0.20));
+    expect(v.bucket).toBe("PLAUSIBLE");
+  });
+
+  it("materially trailing buy-and-hold OOS cannot be SURVIVED (→ SHAKY)", () => {
+    const v = computeVerdict(passing(0.30, 0.50)); // kept 60% of a +50% hold
+    expect(v.bucket).toBe("SUSPECT");
+    expect(v.flags.underperformsBench).toBe("warn");
+  });
+
+  it("getting lapped by doing nothing is DEAD, however strong the raw numbers", () => {
+    // The AAPL-style bug: a big positive OOS return that still trails a far
+    // bigger buy-and-hold over the same window is not a surviving edge.
+    const v = computeVerdict(passing(1.36, 12.0)); // +136% vs +1,200% hold
+    expect(v.bucket).toBe("REJECTED");
+    expect(v.flags.underperformsBench).toBe("fatal");
+    expect(v.headline).toMatch(/holding AAPL/i);
+  });
+
+  it("the downgrade reason cites the real, same-window gap", () => {
+    const v = computeVerdict(passing(1.36, 12.0));
+    const r = v.reasons.find((x) => /underperformed buy-and-hold/i.test(x.text));
+    expect(r).toBeTruthy();
+    expect(r.level).toBe("fatal");
+    expect(r.text).toMatch(/136\.0%/);    // the strategy's OOS return
+    expect(r.text).toMatch(/1200\.0%/);   // same-window buy-and-hold
+    expect(r.text).toMatch(/1064\.0%/);   // the gap (1200 − 136)
+    expect(r.text).not.toMatch(/99900|full window/i); // never the full-history number
+  });
+
+  it("a tiny shortfall vs buy-and-hold is NOT a downgrade (marginal is fine)", () => {
+    const v = computeVerdict(passing(0.30, 0.34)); // 4-pt gap, below material
+    expect(v.bucket).toBe("PLAUSIBLE");
+    expect(v.flags.underperformsBench).toBeUndefined();
+  });
+});
