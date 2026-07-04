@@ -1,0 +1,16 @@
+{
+  "name": "Null — adversarial strategy tester",
+  "short_name": "Null",
+  "description": "Backtests trading strategies on real data, splits seen from unseen history, charges real costs, and delivers a blunt verdict. A credibility stress-test, not investment advice.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0A0E1A",
+  "theme_color": "#0A0E1A",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

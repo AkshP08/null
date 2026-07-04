@@ -1,0 +1,22 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Serverless functions (the server-side Anthropic proxy lives here).
+[functions]
+  directory = "netlify/functions"
+
+# The demo default: route the browser's AI calls through the proxy so the
+# Anthropic key is never in the client bundle. The proxy only works once the
+# SECRET `ANTHROPIC_API_KEY` is set in the Netlify dashboard (Site settings →
+# Environment). Until then the app cleanly falls back to the deterministic
+# grammar parser + templated autopsy — no crash, disclosed in-app.
+[build.environment]
+  VITE_AI_PROXY_URL = "/.netlify/functions/anthropic"
+
+# SPA fallback (the app also uses hash routing, so deep links always resolve).
+# Netlify serves /.netlify/functions/* before redirects, so the proxy is unaffected.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

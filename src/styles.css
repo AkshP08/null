@@ -1,0 +1,228 @@
+/* ── Null — dark-navy + neon-lime design system ─────────────────────────────
+   Newsreader (serif gravity), JetBrains Mono (instrument output), Inter (UI).
+   Visual tokens live in src/ui/tokens.js and are applied inline; this file
+   carries fonts, the base reset, layout helpers and accessibility.            */
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: #0a0e1a;
+  color: #e6eaf2;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+a {
+  color: #cdff4b;
+}
+
+/* visible keyboard focus everywhere (replaces Tailwind ring utilities) */
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid #cdff4b;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── layout helpers ─────────────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding-left: clamp(16px, 4vw, 24px);
+  padding-right: clamp(16px, 4vw, 24px);
+}
+.w-2xl {
+  max-width: 680px;
+}
+.w-3xl {
+  max-width: 820px;
+}
+.w-5xl {
+  max-width: 1040px;
+}
+.screen {
+  min-height: 100vh;
+  padding-top: 84px;
+  padding-bottom: 72px;
+}
+.center-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.row {
+  display: flex;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.between {
+  justify-content: space-between;
+}
+.center {
+  align-items: center;
+}
+.gap2 {
+  gap: 8px;
+}
+.gap3 {
+  gap: 12px;
+}
+.gap4 {
+  gap: 16px;
+}
+.gap5 {
+  gap: 20px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 760px) {
+  .grid2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+/* eyebrow / mono label */
+.eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8893a8;
+  margin: 0 0 8px;
+}
+
+/* card */
+.card {
+  background: #121829;
+  border: 1px solid #20293d;
+  border-radius: 10px;
+}
+
+/* serif display headings */
+.serif {
+  font-family: "Newsreader", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.mono {
+  font-family: "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* buttons */
+.btn {
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.1em;
+  border-radius: 8px;
+  padding: 14px 22px;
+  font-size: 13px;
+  transition:
+    opacity 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-neon {
+  background: #cdff4b;
+  color: #0a0e1a;
+}
+.btn-neon:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.btn-red {
+  background: #ff5b5b;
+  color: #fff;
+}
+.btn-red:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.btn-ghost {
+  border: 1px solid #20293d;
+  color: #8893a8;
+  background: transparent;
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: #8893a8;
+}
+
+textarea,
+input,
+select {
+  outline: none;
+}
+textarea::placeholder,
+input::placeholder {
+  color: #8893a8;
+}
+
+/* recharts tick text inherits */
+.recharts-text {
+  font-family: "JetBrains Mono", monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* scrollbar in code blocks */
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+pre::-webkit-scrollbar-thumb {
+  background: #20293d;
+  border-radius: 4px;
+}
