@@ -196,6 +196,24 @@ a {
   border-color: #8893a8;
 }
 
+/* loading pulse dot (inherits text color; reduced-motion handled globally below) */
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: nullPulse 1.2s ease-in-out infinite;
+}
+@keyframes nullPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
 textarea,
 input,
 select {

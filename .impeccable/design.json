@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T00:00:00Z",
+  "title": "Design System: Null",
+  "extensions": {
+    "colorMeta": {
+      "abyss-navy": {
+        "role": "neutral",
+        "displayName": "Abyss Navy",
+        "canonical": "#0A0E1A",
+        "tonalRamp": ["#05070D", "#0A0E1A", "#121829", "#1B2338", "#2A3550", "#3E4C6E", "#5C6B8F", "#8893A8"]
+      },
+      "slab-navy": {
+        "role": "neutral",
+        "displayName": "Slab Navy",
+        "canonical": "#121829",
+        "tonalRamp": ["#090C15", "#0F1422", "#121829", "#161D30", "#1F2840", "#2B3858", "#45567D", "#6E7EA3"]
+      },
+      "raised-navy": {
+        "role": "neutral",
+        "displayName": "Raised Navy",
+        "canonical": "#161D30",
+        "tonalRamp": ["#0A0E1A", "#121829", "#161D30", "#1C2540", "#273252", "#35446B", "#4E608C", "#7484AB"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#20293D",
+        "tonalRamp": ["#10131D", "#181F2D", "#20293D", "#2A354F", "#394767", "#4D5E85", "#6A7BA2", "#8E9CBE"]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone",
+        "canonical": "#E6EAF2",
+        "tonalRamp": ["#30384A", "#4A546C", "#6A758F", "#8B96AF", "#ACB5CA", "#C9D0DF", "#E6EAF2", "#F4F6FB"]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Ash",
+        "canonical": "#8893A8",
+        "tonalRamp": ["#2C3342", "#3D4557", "#505A70", "#67728A", "#8893A8", "#A3ACBD", "#C0C7D4", "#DDE1E9"]
+      },
+      "signal-lime": {
+        "role": "primary",
+        "displayName": "Signal Lime",
+        "canonical": "#CDFF4B",
+        "tonalRamp": ["#333F0D", "#4C5E13", "#66801A", "#80A021", "#A3CC2E", "#C0EF3E", "#CDFF4B", "#E2FF8E"]
+      },
+      "caution-amber": {
+        "role": "secondary",
+        "displayName": "Caution Amber",
+        "canonical": "#E8B53B",
+        "tonalRamp": ["#3A2C09", "#574211", "#755819", "#936F20", "#C0912C", "#E8B53B", "#F0C863", "#F6DC9B"]
+      },
+      "flatline-red": {
+        "role": "tertiary",
+        "displayName": "Flatline Red",
+        "canonical": "#FF5B5B",
+        "tonalRamp": ["#4A1313", "#6E1C1C", "#932525", "#B82E2E", "#E04545", "#FF5B5B", "#FF8585", "#FFB3B3"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The verdict word only — SURVIVED / SHAKY / DEAD — in its severity color." },
+      "headline": { "displayName": "Headline", "purpose": "Hero and screen-opening serif statements." },
+      "body": { "displayName": "Body", "purpose": "Explanatory prose in Inter, ~460px measure when standalone." },
+      "label": { "displayName": "Label / Eyebrow", "purpose": "Mono uppercase eyebrows, metric labels, button text, status lines." },
+      "numeric": { "displayName": "Numeric", "purpose": "Every computed figure, mono + tabular-nums, colored by severity." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-reveal", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entrance easing for hero and verdict fade-and-rise (0.7–0.8s)." },
+      { "name": "dur-state", "value": "0.15s", "purpose": "Button opacity/border/background state transitions." },
+      { "name": "dur-unlock", "value": "0.4s", "purpose": "Blur-to-sharp transition when a locked metric is revealed." }
+    ],
+    "breakpoints": [
+      { "name": "stack", "value": "760px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Neon Button",
+      "kind": "button",
+      "refersTo": "button-neon",
+      "description": "Primary CTA; the single most prominent action on a screen.",
+      "html": "<button class=\"ds-btn-neon\">TEST A STRATEGY <svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-btn-neon { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.1em; background: #CDFF4B; color: #0A0E1A; border: 0; border-radius: 8px; padding: 16px 30px; cursor: pointer; transition: opacity 0.15s; } .ds-btn-neon:hover { opacity: 0.85; } .ds-btn-neon:focus-visible { outline: 2px solid #CDFF4B; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Low-emphasis secondary action (SAVE, COPY LINK, EXPORT PINE).",
+      "html": "<button class=\"ds-btn-ghost\">EXPORT PINE</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.1em; background: transparent; color: #8893A8; border: 1px solid #20293D; border-radius: 8px; padding: 14px 22px; cursor: pointer; transition: border-color 0.15s, color 0.15s; } .ds-btn-ghost:hover { border-color: #8893A8; } .ds-btn-ghost:focus-visible { outline: 2px solid #CDFF4B; outline-offset: 2px; }"
+    },
+    {
+      "name": "Red Button",
+      "kind": "button",
+      "refersTo": "button-red",
+      "description": "Destructive action; flatline-red fill.",
+      "html": "<button class=\"ds-btn-red\">DELETE</button>",
+      "css": ".ds-btn-red { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.1em; background: #FF5B5B; color: #fff; border: 0; border-radius: 8px; padding: 14px 22px; cursor: pointer; transition: opacity 0.15s; } .ds-btn-red:hover { opacity: 0.85; } .ds-btn-red:focus-visible { outline: 2px solid #CDFF4B; outline-offset: 2px; }"
+    },
+    {
+      "name": "Metric Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Key-number card: mono eyebrow label over a large mono value colored by severity.",
+      "html": "<div class=\"ds-metric-card\"><p class=\"ds-metric-label\">OOS SHARPE</p><p class=\"ds-metric-value\">1.42</p></div>",
+      "css": ".ds-metric-card { background: #121829; border: 1px solid #20293D; border-radius: 10px; padding: 16px; min-width: 160px; } .ds-metric-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #8893A8; margin: 0 0 10px; } .ds-metric-value { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 500; color: #CDFF4B; margin: 0; }"
+    },
+    {
+      "name": "Metric Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Label/value row with a hairline underline; the value is lime (good) or red (bad). Supports a blur-locked state before reveal.",
+      "html": "<div class=\"ds-metric-row\"><span class=\"ds-mr-label\">MAX DRAWDOWN</span><span class=\"ds-mr-value ds-mr-bad\">-38.4%</span></div>",
+      "css": ".ds-metric-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #20293D; transition: filter 0.4s; } .ds-metric-row.ds-locked { filter: blur(6px); pointer-events: none; user-select: none; } .ds-mr-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #8893A8; } .ds-mr-value { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 500; } .ds-mr-value.ds-mr-good { color: #CDFF4B; } .ds-mr-value.ds-mr-bad { color: #FF5B5B; }"
+    },
+    {
+      "name": "Nav Bar",
+      "kind": "nav",
+      "refersTo": "nav-chip",
+      "description": "Fixed top bar: null logo (home) left, mono TEST chip right.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-logo\"><span class=\"ds-logo-glyph\">∅</span><span class=\"ds-logo-word\">null</span></span><button class=\"ds-nav-chip\">TEST A STRATEGY</button></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: #0A0E1A; border-bottom: 1px solid #20293D; } .ds-logo { display: inline-flex; align-items: center; gap: 8px; } .ds-logo-glyph { font-family: 'JetBrains Mono', monospace; color: #CDFF4B; font-size: 20px; line-height: 1; } .ds-logo-word { font-family: 'Newsreader', Georgia, serif; color: #E6EAF2; font-size: 18px; letter-spacing: -0.02em; } .ds-nav-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #8893A8; background: transparent; border: 1px solid #20293D; border-radius: 6px; padding: 8px 14px; cursor: pointer; } .ds-nav-chip:hover { border-color: #8893A8; }"
+    },
+    {
+      "name": "Disclaimer Chip",
+      "kind": "chip",
+      "refersTo": "disclaimer-chip",
+      "description": "Persistent honesty guardrail shown wherever numbers appear.",
+      "html": "<span class=\"ds-disclaimer\">CREDIBILITY STRESS-TEST · NOT ADVICE · NOT A SIGNAL</span>",
+      "css": ".ds-disclaimer { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: #8893A8; border: 1px solid #20293D; border-radius: 100px; padding: 3px 10px; }"
+    },
+    {
+      "name": "Verdict Headline",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The signature payload: giant serif verdict word in its severity color, over an italic gloss.",
+      "html": "<div class=\"ds-verdict\"><p class=\"ds-verdict-eyebrow\">VERDICT · GOLDEN CROSS · IBM</p><h1 class=\"ds-verdict-word\">DEAD</h1><p class=\"ds-verdict-gloss\">An over-fit rule that collapses the moment it meets data it never saw.</p></div>",
+      "css": ".ds-verdict { text-align: center; } .ds-verdict-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8893A8; margin: 0; } .ds-verdict-word { font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: clamp(3rem, 13vw, 6rem); line-height: 1; color: #FF5B5B; margin: 18px 0 8px; } .ds-verdict-gloss { font-family: 'Newsreader', Georgia, serif; font-style: italic; color: #E6EAF2; font-size: clamp(1rem, 3vw, 1.25rem); line-height: 1.4; margin: 0; }"
+    },
+    {
+      "name": "Verdict-Meaning Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Semantic card whose border/fill tint to the active severity color.",
+      "html": "<div class=\"ds-meaning-card\"><p class=\"ds-meaning-eyebrow\">WHY THIS IS A SAVE</p><p class=\"ds-meaning-title\">A kill here is the tool doing its job.</p><p class=\"ds-meaning-body\">The strategy failed out-of-sample. Better to learn that here than with real money.</p></div>",
+      "css": ".ds-meaning-card { text-align: left; border-radius: 10px; padding: 16px 18px; border: 1px solid rgba(255,91,91,0.27); background: rgba(255,91,91,0.05); } .ds-meaning-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em; color: #FF5B5B; margin: 0 0 8px; } .ds-meaning-title { font-family: 'Newsreader', Georgia, serif; font-size: 1.1rem; color: #E6EAF2; line-height: 1.35; margin: 0 0 10px; } .ds-meaning-body { font-family: 'Inter', system-ui, sans-serif; font-size: 13.5px; color: #E6EAF2; line-height: 1.6; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Autopsy Table",
+    "overview": "Null looks like a cold, clinical examination room for trading strategies. The interface is a dark navy slab lit from within; the user brings a strategy they believe in, and the tool lays it out, cuts into it, and reports what it finds — without sentiment. The serif carries the gravity of a verdict; the monospace is the instrument readout clicking off real measurements; the single neon-lime accent is the one live signal on an otherwise lightless slab. The system is restrained to the point of austerity — no gloss, no gradient buttons, no drop shadows, no decorative illustration. Depth comes entirely from tonal navy layering and hairline borders. Color is almost entirely withheld so that when it does appear it means something: lime for what survives scrutiny, amber for what is shaky, red for what is dead. The anti-reference is the hype-driven retail trading app.",
+    "keyCharacteristics": [
+      "Dark navy \"examination slab\" canvas; depth by tonal layering, never shadow.",
+      "Three-voice typography: serif judgment, mono measurement, sans explanation.",
+      "One reserved accent (neon lime) carrying semantic weight, never decoration.",
+      "A traffic-light semantic palette (lime / amber / red) tied to verdict severity.",
+      "Numbers are always monospace and tabular — measurements, not marketing."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Signal Lime appears on no more than a small fraction of any screen. It is the live wire — a CTA, the logo, a focus ring, a surviving metric. If lime is everywhere, nothing reads as the signal.", "section": "colors" },
+      { "name": "The Color-Means-Severity Rule", "body": "Lime / amber / red are never aesthetic choices. They are bound to meaning: good / caution / fatal. Never color for decoration.", "section": "colors" },
+      { "name": "The Numbers Are Mono Rule", "body": "Every computed figure is JetBrains Mono with tabular-nums. Numbers are instrument output and must align in columns like a readout; never set in the serif or the sans.", "section": "typography" },
+      { "name": "The Serif Speaks Only to Judge Rule", "body": "Newsreader is reserved for verdicts, headlines, and the italic gloss. It carries weight precisely because it is scarce.", "section": "typography" },
+      { "name": "The No-Shadow Rule", "body": "Surfaces never cast shadows. If something must separate from its background, it does so with a tonal step and a hairline border — not a shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Signal Lime rare and meaningful — a CTA, the logo, a focus ring, a surviving metric — never a background or a decorative flourish (The One Signal Rule).",
+      "Do set every computed number in JetBrains Mono with tabular-nums, colored by severity (lime good / bone neutral / red bad).",
+      "Do build depth from tonal navy layering (Abyss → Slab → Raised) plus 1px Hairline borders.",
+      "Do reserve Newsreader serif for verdicts, headlines, and the italic gloss.",
+      "Do give every interactive element the 2px Signal Lime :focus-visible outline, and honor prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't add box-shadows or faux-3D elevation — the system is flat by doctrine (The No-Shadow Rule).",
+      "Don't use lime, amber, or red decoratively; each is bound to a severity meaning.",
+      "Don't import hype-trading-app tropes — gradient CTAs, confetti, gamified dopamine, green/red candle decoration, \"to the moon\" energy.",
+      "Don't set numbers in the serif or sans, and don't use the serif for UI chrome or body copy.",
+      "Don't soften a DEAD/SHAKY verdict visually; it is color-coded honestly and presented at full size — the kill is the tool working."
+    ]
+  }
+}

@@ -328,7 +328,7 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         <motion.div key={motionKey} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-          {screen === "landing" && <Landing onStart={() => navigate("input")} onGuided={onGuidedExample} firstRun={firstRun} dataReady={!!summaries} />}
+          {screen === "landing" && <Landing onStart={() => navigate("input")} onGuided={onGuidedExample} firstRun={firstRun} dataReady={!!summaries} dataError={dataError} />}
 
           {screen === "input" && dataError && (
             <div className="screen container w-2xl">
